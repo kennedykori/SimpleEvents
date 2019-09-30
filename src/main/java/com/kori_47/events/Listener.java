@@ -28,9 +28,8 @@ public interface Listener {
 	 * @param eventClass the class of the event that the handler supports.
 	 * @param handler the handler being registered to this listener.
 	 * 
-	 * @return true if this operation was a success, false otherwise.
 	 */
-	<T extends Event> boolean addHandler(Class<T> eventClass, Handler<T> handler);
+	<T extends Event> void addHandler(Class<T> eventClass, Handler<T> handler);
 
 	/**
 	 * Removes a {@link Handler} from this listener.
@@ -40,9 +39,8 @@ public interface Listener {
 	 * @param eventClass the class of the event that the handler supports.
 	 * @param handler the handler being removed from this listener.
 	 * 
-	 * @return true if this operation was a success, false otherwise.
 	 */
-	<T extends Event> boolean removeHandler(Class<T> eventClass, Handler<T> handler);
+	<T extends Event> void removeHandler(Class<T> eventClass, Handler<T> handler);
 	
 	
 	/**
