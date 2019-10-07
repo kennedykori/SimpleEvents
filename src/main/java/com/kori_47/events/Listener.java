@@ -4,6 +4,7 @@
 package com.kori_47.events;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -60,17 +61,17 @@ public interface Listener {
 	void clear();
 
 	/**
-	 * Returns a {@code List} of all the {@link Handler handlers} registered in this listener 
-	 * that support the given event type or {@code null} if none is found.
+	 * Returns an {@link Optional} {@code List} of all the {@link Handler handlers} registered 
+	 * in this listener that support the given event type. If no such handlers are registered, 
+	 * the {@code Optional.isPresent()} will return {@code false}.
 	 * 
 	 * @param <T> the type of an {@link Event event} that the handlers to be returned support.
 	 * 
 	 * @param eventClass the class of the event that the handlers to be returned support.
 	 *
-	 * @return the {@code List} containing all the handlers that support the givent event type 
-	 * or {@code null} if no handlers are found.
+	 * @return an {@code Optional List} containing all the handlers that support the given event type.
 	 */
-	<T extends Event> List<Handler<T>> getHandlers(Class<T> eventClass);
+	<T extends Event> Optional<List<Handler<T>>> getHandlers(Class<T> eventClass);
 	
 	/**
 	 * Returns a {@code Set} of all {@link Event events} that are currently supported by this 
