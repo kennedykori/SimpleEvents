@@ -6,15 +6,12 @@ package com.kori_47.events;
 import static java.util.Objects.requireNonNull;
 import static java.util.Collections.synchronizedMap;
 import static java.util.Collections.synchronizedList;
-import static java.util.stream.Collectors.toList;
 
 import static com.kori_47.utils.ObjectUtils.requireNonNegative;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -55,14 +52,10 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @since Oct 8, 2019, 2:46:35 PM
  */
-public class ThreadedListener implements Listener {
+public class ThreadedListener extends AbstractListener {
 	
 	private static final int DEFAULT_MAX_THREADS = 16;
-
-	/**
-	 * stores all registered handlers
-	 */
-	private final Map<Class<? extends Event>, List<Handler<? extends Event>>> registeredHandlers;
+	
 	
 	private final ExecutorService listenerService;
 	private final boolean shutdownServiceOnDispose;
@@ -132,9 +125,9 @@ public class ThreadedListener implements Listener {
 	 * @throws NullPointerException if {@code service} is {@code null}.
 	 */
 	public ThreadedListener(ExecutorService service, boolean shutdownServiceOnDispose) {
+		super(synchronizedMap(new LinkedHashMap<>()));
 		this.listenerService = requireNonNull(service, "service cannot be null.");
 		this.shutdownServiceOnDispose = shutdownServiceOnDispose;
-		this.registeredHandlers = synchronizedMap(new LinkedHashMap<>());
 	}
 
 	/**
@@ -145,13 +138,7 @@ public class ThreadedListener implements Listener {
 	@Override
 	public <T extends Event> void addHandler(Class<T> eventClass, Handler<T> handler) {
 		checkState();
-		requireNonNull(eventClass, "eventClass cannot be null.");
-		requireNonNull(handler, "handler cannot be null.");
-		registeredHandlers.merge(
-			eventClass, synchronizedList(new ArrayList<>()),
-			(oldValue, value) -> oldValue
-		);
-		registeredHandlers.get(eventClass).add(handler);
+		super.addHandler(eventClass, handler);
 	}
 
 	/**
@@ -162,15 +149,7 @@ public class ThreadedListener implements Listener {
 	@Override
 	public <T extends Event> void removeHandler(Class<T> eventClass, Handler<T> handler) {
 		checkState();
-		requireNonNull(eventClass, "eventClass cannot be null.");
-		requireNonNull(handler, "handler cannot be null.");
-		registeredHandlers.computeIfPresent(
-			eventClass,
-			(key, value) -> {
-				value.remove(handler);
-				return value;
-			}
-		);
+		super.removeHandler(eventClass, handler);
 	}
 
 	/**
@@ -178,24 +157,10 @@ public class ThreadedListener implements Listener {
 	* @throws IllegalStateException if this listener has already been disposed.
 	* @throws NullPointerException if event is {@code null}.
 	*/
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Event> void fireEvent(T event) {
 		checkState();
-		requireNonNull(event, "event cannot be null.");
-		if (registeredHandlers.containsKey(event.getClass()))
-			registeredHandlers.get(event.getClass()).forEach(
-					handler -> ((Handler<T>) handler).handle(event)
-				);
-	}
-
-	/**
-	* {@inheritDoc}
-	*/
-	@Override
-	public void clear() {
-		registeredHandlers.values().forEach(list -> list.clear());
-		registeredHandlers.clear();
+		super.fireEvent(event);
 	}
 
 	/**
@@ -203,15 +168,10 @@ public class ThreadedListener implements Listener {
 	* @throws IllegalStateException if this listener has already been disposed.
 	* @throws NullPointerException if {@code eventClass} is {@code null}.
 	*/
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Event> Optional<List<Handler<T>>> getHandlers(Class<T> eventClass) {
 		checkState();
-		requireNonNull(eventClass, "eventClass cannot be null.");
-		List<Handler<T>> handlers = null;
-		if (registeredHandlers.containsKey(eventClass))
-			handlers = registeredHandlers.get(eventClass).stream().map(handler -> (Handler<T>) handler).collect(toList());
-		return Optional.ofNullable(handlers);
+		return super.getHandlers(eventClass);
 	}
 
 	/**
@@ -221,7 +181,7 @@ public class ThreadedListener implements Listener {
 	@Override
 	public Set<Class<? extends Event>> getSupportedEventTypes() {
 		checkState();
-		return new HashSet<>(registeredHandlers.keySet());
+		return super.getSupportedEventTypes();
 	}
 	
 	/**
@@ -254,6 +214,11 @@ public class ThreadedListener implements Listener {
 	 */
 	public boolean isDisposed() {
 		return disposed;
+	}
+	
+	@Override
+	protected List<Handler<? extends Event>> createHandlerList() {
+		return synchronizedList(new ArrayList<>());
 	}
 
 	/**
