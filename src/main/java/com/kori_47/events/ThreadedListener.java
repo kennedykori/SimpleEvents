@@ -86,8 +86,8 @@ public class ThreadedListener implements Listener {
 	 * Creates a new {@code ThreadedListener} with the given maximum threads. if 0 is given as {@code maxThreads}, then the number 
 	 * of threads that this listener can use is not limited and every time a thread is needed but one isn't available for reuse, a new 
 	 * thread will be created. On the other hand, if {@code maxThreads} is greater than 0 and the number of threads currently in use 
-	 * are equal to {@code maxThreads}, then any handler will have to wait for a currently executing handler to finish before it can be 
-	 * executed.
+	 * are equal to {@code maxThreads}, then any handler will have to wait for a currently executing handler to finish <i>(i.e, for a 
+	 * thread to be freed)</i> before it can be executed.
 	 * </p>
 	 * 
 	 * <p>
@@ -107,7 +107,8 @@ public class ThreadedListener implements Listener {
 	 * given {@link ThreadFactory}. if 0 is given as {@code maxThreads}, then the number of threads that this listener can use 
 	 * is not limited and every time a thread is needed but one isn't available for reuse, a new thread will be created. On the 
 	 * other hand, if {@code maxThreads} is greater than 0 and the number of threads currently in use are equal to {@code maxThreads}, 
-	 * then any handler will have to wait for a currently executing handler to finish before it can be executed.
+	 * then any handler will have to wait for a currently executing handler to finish <i>(i.e, for a thread to be freed)</i> before 
+	 * it can be executed.
 	 * 
 	 * @param maxThreads the maximum threads that this listener should use or 0 for unlimited threads.
 	 * @param factory the {@code ThreadFactory} that this listener will use when creating new threads.
@@ -148,11 +149,9 @@ public class ThreadedListener implements Listener {
 		requireNonNull(handler, "handler cannot be null.");
 		registeredHandlers.merge(
 			eventClass, synchronizedList(new ArrayList<>()),
-			(oldValue, value) -> {
-				oldValue.add(handler);
-				return oldValue;
-			}
+			(oldValue, value) -> oldValue
 		);
+		registeredHandlers.get(eventClass).add(handler);
 	}
 
 	/**
