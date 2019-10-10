@@ -42,33 +42,42 @@ public interface ListenerTest<T extends Listener> {
 	 */
 	Stream<T> listenerProvider();
 	
+	
 	@ParameterizedTest
 	@MethodSource("listenerProvider")
 	default void testAddHandler(T listener) {
-		// Create generic handlers
-		Handler<SimpleEvent> handler1 = event -> event.source();
-		Handler<SimpleEvent> handler2 = event -> event.toString();
-		Handler<SimpleEvent> handler3 = event -> event.toString();
+		// Create lists of handlers from the handlers provider
+		List<Handler<SimpleEvent>> simpleEventHandlers = simpleEventHandlersProducer().collect(toList());
+		List<Handler<ProgressChangedEvent>> progressChangedEventHandlers = progressChangedEventHandlersProducer().collect(toList());
 		
-		// Assert that the listener has no SimpleEvent handlers before we add them
+		// Assert that the listener doesn't have SimpleEventHandlers before we start
 		assertFalse(listener.getHandlers(SimpleEvent.class).isPresent());
 		
-		// Add the first SimpleEvent handler
-		listener.addHandler(SimpleEvent.class, handler1);
+		// Add SimpleEvent handlers to the listener and assert that each time, a handler is added
+		for (int count = 0; count < simpleEventHandlers.size(); count++) {
+			// Add the handler to the listener
+			listener.addHandler(SimpleEvent.class, simpleEventHandlers.get(count));
+			
+			// Assert that SimpleEvent handlers increased
+			assertEquals((count + 1), listener.getHandlers(SimpleEvent.class).get().size());
+		}
+	
+		// Assert that the listener doesn't have ProgressChangedEvents before we start
+		assertFalse(listener.getHandlers(ProgressChangedEvent.class).isPresent());
 		
-		// Assert that the listener has 1 SimpleEvent handler
-		assertEquals(1, listener.getHandlers(SimpleEvent.class).get().size());
-		
-		// Add the second SimpleEvent handler
-		listener.addHandler(SimpleEvent.class, handler2);
-		
-		// Assert that the listener has 2 SimpleEvent handlers
-		assertEquals(2, listener.getHandlers(SimpleEvent.class).get().size());
+		// Add ProgressChangedEvent handlers to the listener and assert that each time, a handler is added
+		for (int count = 0; count < progressChangedEventHandlers.size(); count++) {
+			// Add the handler to the listener
+			listener.addHandler(ProgressChangedEvent.class, progressChangedEventHandlers.get(count));
+			
+			// Assert that ProgressChangedEvent handlers increased
+			assertEquals((count + 1), listener.getHandlers(ProgressChangedEvent.class).get().size());
+		}
 		
 		// Assert that a NullPointerException is thrown when null arguments are passed to addHandler
 		assertThrows(NullPointerException.class, () -> listener.addHandler(null, null));
 		assertThrows(NullPointerException.class, () -> listener.addHandler(SimpleEvent.class, null));
-		assertThrows(NullPointerException.class, () -> listener.addHandler(null, handler3));
+		assertThrows(NullPointerException.class, () -> listener.addHandler(null, simpleEventHandlers.get(0)));
 		
 		// Clean up
 		cleanUp(listener);
@@ -77,18 +86,19 @@ public interface ListenerTest<T extends Listener> {
 	@ParameterizedTest
 	@MethodSource("listenerProvider")
 	default void testRemoveHandler(T listener) {
-		// Create a List of handlers from the handlers provider
-		List<Handler<SimpleEvent>> handlers = simpleEventHandlersProducer().collect(toList());
+		// Create lists of handlers from the handlers provider
+		List<Handler<SimpleEvent>> simpleEventHandlers = simpleEventHandlersProducer().collect(toList());
+		List<Handler<ProgressChangedEvent>> progressChangedEventHandlers = progressChangedEventHandlersProducer().collect(toList());
 		
-		// Add the handlers to the listener
-		handlers.forEach(handler -> listener.addHandler(SimpleEvent.class, handler));
+		// Add SimpleEvent handlers to the listener
+		simpleEventHandlers.forEach(handler -> listener.addHandler(SimpleEvent.class, handler));
 		
-		// Assert that all the handlers were added
-		assertEquals(handlers.size(), listener.getHandlers(SimpleEvent.class).get().size());
+		// Assert that all SimpleEvent handlers were added
+		assertEquals(simpleEventHandlers.size(), listener.getHandlers(SimpleEvent.class).get().size());
 		
-		// Remove the handlers one by one and assert that each time, the handler has been removed
-		for (int index = 0, remainingHandlers = (handlers.size() - 1); index < handlers.size(); index++, remainingHandlers--) {
-			Handler<SimpleEvent> handler = handlers.get(index);
+		// Remove SimpleEvent handlers one by one and assert that each time, the handler has been removed
+		for (int index = 0, remainingHandlers = (simpleEventHandlers.size() - 1); index < simpleEventHandlers.size(); index++, remainingHandlers--) {
+			Handler<SimpleEvent> handler = simpleEventHandlers.get(index);
 			// Remove the handler
 			listener.removeHandler(SimpleEvent.class, handler);
 			
@@ -96,10 +106,26 @@ public interface ListenerTest<T extends Listener> {
 			assertEquals(remainingHandlers, listener.getHandlers(SimpleEvent.class).get().size());
 		}
 		
+		// Add ProgressChangedEvent handlers to the listener
+		progressChangedEventHandlers.forEach(handler -> listener.addHandler(ProgressChangedEvent.class, handler));
+		
+		// Assert that all ProgressChangedEvent handlers were added
+		assertEquals(progressChangedEventHandlers.size(), listener.getHandlers(ProgressChangedEvent.class).get().size());
+		
+		// Remove ProgressChangedEvent handlers one by one and assert that each time, the handler has been removed
+		for (int index = 0, remainingHandlers = (progressChangedEventHandlers.size() - 1); index < simpleEventHandlers.size(); index++, remainingHandlers--) {
+			Handler<ProgressChangedEvent> handler = progressChangedEventHandlers.get(index);
+			// Remove the handler
+			listener.removeHandler(ProgressChangedEvent.class, handler);
+			
+			// Assert that the handlers in the listener reduced
+			assertEquals(remainingHandlers, listener.getHandlers(ProgressChangedEvent.class).get().size());
+		}
+		
 		// Assert that a NullPointerException is thrown when null arguments are passed to removeHandler
 		assertThrows(NullPointerException.class, () -> listener.removeHandler(null, null));
 		assertThrows(NullPointerException.class, () -> listener.removeHandler(SimpleEvent.class, null));
-		assertThrows(NullPointerException.class, () -> listener.removeHandler(null, handlers.get(0)));
+		assertThrows(NullPointerException.class, () -> listener.removeHandler(null, simpleEventHandlers.get(0)));
 		
 		// Clean up
 		cleanUp(listener);
@@ -128,8 +154,8 @@ public interface ListenerTest<T extends Listener> {
 	}
 	
 	/**
-	 * This is {@link Handler} producer. All {@code Handler}s produced by the {@code Stream} returned by this 
-	 * method are attached to the {@link SimpleEvent} {@code Event}.
+	 * This is a {@link Handler} producer. All {@code Handler}s produced by the {@code Stream} returned by this 
+	 * method are attached to {@link SimpleEvent}.
 	 * 
 	 * @return a {@code Stream} of {@code SimpleEvent} handlers.
 	 */
@@ -137,6 +163,20 @@ public interface ListenerTest<T extends Listener> {
 		return Stream.of(
 				event -> event.source(),
 				event -> event.toString()
+		);
+	}
+	
+	/**
+	 * This is a {@link Handler} producer. All {@code Handler}s produced by the {@code Stream} returned by this 
+	 * method are attached to {@link ProgressChangedEvent}.
+	 * 
+	 * @return a {@code Stream} of {@code SimpleEvent} handlers.
+	 */
+	default Stream<Handler<ProgressChangedEvent>> progressChangedEventHandlersProducer() {
+		return Stream.of(
+				event -> event.getPreviousValue(),
+				event -> event.getNewValue(),
+				event -> event.source()
 		);
 	}
 }
