@@ -4,9 +4,19 @@
 package com.kori_47.events;
 
 /**
+ * <p>
  * This is an {@link Event event} that can be used to signal that a value of interest has changed. 
  * The {@link #getPreviousValue()} and {@link #getNewValue()} methods can be used to retrieve the 
  * previous and new value respectively.
+ * </p>
+ * <p>
+ * <i>
+ * <b>NOTE:</b> This class doesn't check whether the previous and new value are equal, if both values 
+ * are equal, they will be accepted just fine without any exceptions being thrown. Derivatives of this 
+ * class may choose to enforce that the values be not equal.
+ * </i>
+ * </p>
+ * 
  * 
  * @param <T> the type of value that changed.
  * 
