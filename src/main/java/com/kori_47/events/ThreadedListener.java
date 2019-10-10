@@ -197,7 +197,7 @@ public class ThreadedListener extends AbstractListener {
 			if (shutdownServiceOnDispose) {
 				listenerService.shutdown();
 				// if the listenerService did not shutdown properly, forcefully shut it down.
-				if (!listenerService.isShutdown()) listenerService.shutdownNow();
+				if (!listenerService.isTerminated()) listenerService.shutdownNow();
 			}
 			// Clear this listener
 			clear();
