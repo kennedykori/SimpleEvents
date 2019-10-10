@@ -1,10 +1,11 @@
 package com.kori_47.events;
 
 import static java.util.stream.Collectors.toList;
-
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -148,6 +149,43 @@ public interface ListenerTest<T extends Listener> {
 		
 		// Assert that testValue has been increased
 		assertEquals(1, testValue.get());
+		
+		// Assert that no errors occur if fireEvent is called with an event with no registered handlers
+		assertFalse(listener.getHandlers(ProgressChangedEvent.class).isPresent()); // Assert that there no ProgressChangedEvent handlers
+		assertDoesNotThrow(() -> listener.fireEvent(new ProgressChangedEvent(this, Float.valueOf(".1"), Float.valueOf(".2"))));
+		
+		// Assert that testValue wasn't changed by the previous fireEvent() call
+		assertEquals(1, testValue.get());
+		
+		// Fire a SimpleEvent 3 times
+		listener.fireEvent(new SimpleEvent(this));
+		listener.fireEvent(new SimpleEvent(this));
+		listener.fireEvent(new SimpleEvent(this));
+		
+		// Assert that testValue has been increased
+		assertEquals(4, testValue.get());
+		
+		// Clean up
+		cleanUp(listener);
+	}
+	
+	@ParameterizedTest
+	@MethodSource("listenerProvider")
+	default void testGetSupportedEventTypes(T listener) {
+		// Assert that the listener returns an empty Set for supported types initially
+		assertTrue(listener.getSupportedEventTypes().isEmpty());
+		
+		// Add a SimpleEvent handler
+		listener.addHandler(SimpleEvent.class, simpleEventHandlersProducer().findAny().get());
+		
+		// Assert that we have 1 SupportedEventType
+		assertEquals(1, listener.getSupportedEventTypes().size());
+		
+		// Add ProgressEventHandlers
+		progressChangedEventHandlersProducer().forEach(handler -> listener.addHandler(ProgressChangedEvent.class, handler));
+		
+		// Assert that we have 2 SupportedEventType
+		assertEquals(2, listener.getSupportedEventTypes().size());
 		
 		// Clean up
 		cleanUp(listener);
