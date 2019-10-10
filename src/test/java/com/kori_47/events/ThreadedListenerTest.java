@@ -41,5 +41,10 @@ public class ThreadedListenerTest implements ListenerTest<ThreadedListener> {
 		
 		// Assert that the listener is now disposed
 		assertTrue(listener.isDisposed());
+		
+		// Call dispose multiple times to make sure it returns cleanly even after a listener has already been disposed
+		listener.dispose();
+		listener.dispose();
+		listener.dispose();
 	}
 }
