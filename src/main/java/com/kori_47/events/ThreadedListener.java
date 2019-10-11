@@ -157,10 +157,16 @@ public class ThreadedListener extends AbstractListener {
 	* @throws IllegalStateException if this listener has already been disposed.
 	* @throws NullPointerException if event is {@code null}.
 	*/
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Event> void fireEvent(T event) {
 		checkState();
-		super.fireEvent(event);
+		requireNonNull(event, "event cannot be null.");
+		if (registeredHandlers.containsKey(event.getClass())) {
+			registeredHandlers.get(event.getClass()).forEach(
+				handler -> listenerService.submit(() -> ((Handler<T>) handler).handle(event))
+			);
+		}
 	}
 
 	/**
