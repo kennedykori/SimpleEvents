@@ -35,8 +35,7 @@ public abstract class AbstractListener implements Listener {
 	}
 
 	/**
-	* {@inheritDoc}
-	* @throws NullPointerException if any of the arguments given is/are {@code null}.
+	* {@inheritDoc} 
 	*/
 	@Override
 	public <T extends Event> void addHandler(Class<T> eventClass, Handler<T> handler) {
@@ -51,7 +50,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if any of the arguments given is/are {@code null}.
 	*/
 	@Override
 	public <T extends Event> void removeHandler(Class<T> eventClass, Handler<T> handler) {
@@ -68,7 +66,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if event is {@code null}.
 	*/
 	@SuppressWarnings("unchecked")
 	@Override
@@ -94,7 +91,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if {@code eventClass} is {@code null}.
 	*/
 	@Override
 	public <T extends Event> Optional<List<Handler<T>>> getHandlers(Class<T> eventClass) {

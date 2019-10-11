@@ -29,6 +29,7 @@ public interface Listener {
 	 * @param eventClass the class of the event that the handler supports.
 	 * @param handler the handler being registered to this listener.
 	 * 
+	 * @throws NullPointerException if any of the arguments given is/are {@code null}.
 	 */
 	<T extends Event> void addHandler(Class<T> eventClass, Handler<T> handler);
 
@@ -40,6 +41,7 @@ public interface Listener {
 	 * @param eventClass the class of the event that the handler supports.
 	 * @param handler the handler being removed from this listener.
 	 * 
+	 * @throws NullPointerException if any of the arguments given is/are {@code null}.
 	 */
 	<T extends Event> void removeHandler(Class<T> eventClass, Handler<T> handler);
 	
@@ -52,6 +54,7 @@ public interface Listener {
 	 * 
 	 * @param event the event to fire.
 	 * 
+	 * @throws NullPointerException if event is {@code null}.
 	 */ 
 	<T extends Event> void fireEvent(T event);
 	
@@ -70,6 +73,8 @@ public interface Listener {
 	 * @param eventClass the class of the event that the handlers to be returned support.
 	 *
 	 * @return an {@code Optional List} containing all the handlers that support the given event type.
+	 * 
+	 * @throws NullPointerException if {@code eventClass} is {@code null}.
 	 */
 	<T extends Event> Optional<List<Handler<T>>> getHandlers(Class<T> eventClass);
 	
