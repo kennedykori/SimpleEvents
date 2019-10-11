@@ -165,6 +165,9 @@ public interface ListenerTest<T extends Listener> {
 		// Assert that testValue has been increased
 		assertEquals(4, testValue.get());
 		
+		// Assert that a NullPointerException is thrown when a null event is passed
+		assertThrows(NullPointerException.class, () -> listener.fireEvent(null));
+		
 		// Clean up
 		cleanUp(listener);
 	}
@@ -186,6 +189,9 @@ public interface ListenerTest<T extends Listener> {
 		
 		// Assert that we have 2 SupportedEventType
 		assertEquals(2, listener.getSupportedEventTypes().size());
+		
+		// Assert that a NullPointerException is thrown when a null eventClass is passed
+		assertThrows(NullPointerException.class, () ->  listener.getHandlers(null));
 		
 		// Clean up
 		cleanUp(listener);
