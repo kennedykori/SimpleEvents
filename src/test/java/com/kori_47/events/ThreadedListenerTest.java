@@ -40,9 +40,7 @@ public class ThreadedListenerTest implements ListenerTest<ThreadedListener> {
 		 * CONTACT ME OR FORK THE REPO AND CREATE A PULL REQUEST.
 		 */ 
 		
-		
-		
-		// Create a value to be increamented
+		// Create a value to be incremented by handlers
 		AtomicInteger testValue = new AtomicInteger();
 		
 		// Duration to block the thread

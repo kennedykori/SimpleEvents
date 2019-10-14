@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * This is a simple implementation of the {@link Listener} interface. For most use cases where a 
- * listener is needed, this class should be sufficient.
+ * This is a simple implementation of the {@link Listener} interface. This class should be sufficient for 
+ * most use cases where a listener is needed.
  * 
  * @author Kennedy Kori
  *

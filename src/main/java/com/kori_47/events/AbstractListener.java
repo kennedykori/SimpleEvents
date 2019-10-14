@@ -28,7 +28,11 @@ public abstract class AbstractListener implements Listener {
 	protected final Map<Class<? extends Event>, List<Handler<? extends Event>>> registeredHandlers;
 
 	/**
+	 * Creates a new Listener with the given listener storage.
 	 * 
+	 * @param registeredHandlers the {@code Map} to store listeners.
+	 * 
+	 * @throws NullPointerException if {@code registeredHandlers} is {@code null}.
 	 */
 	public AbstractListener(Map<Class<? extends Event>, List<Handler<? extends Event>>> registeredHandlers) {
 		this.registeredHandlers = requireNonNull(registeredHandlers, "registeredHandlers cannot be null.");

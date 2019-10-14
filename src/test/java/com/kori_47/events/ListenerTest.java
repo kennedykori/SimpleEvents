@@ -135,7 +135,7 @@ public interface ListenerTest<T extends Listener> {
 	@ParameterizedTest
 	@MethodSource("listenerProvider")
 	default void testFireEvent(T listener) {
-		// Create a value to be increamented
+		// Create a value to be incremented by handlers
 		AtomicInteger testValue = new AtomicInteger();
 		
 		// Create a handler that should increment testValue by one each time it is called.
