@@ -135,7 +135,7 @@ public interface ListenerTest<T extends Listener> {
 	@ParameterizedTest
 	@MethodSource("listenerProvider")
 	default void testFireEvent(T listener) {
-		// Create a value to be increamented
+		// Create a value to be incremented by handlers
 		AtomicInteger testValue = new AtomicInteger();
 		
 		// Create a handler that should increment testValue by one each time it is called.
@@ -165,6 +165,9 @@ public interface ListenerTest<T extends Listener> {
 		// Assert that testValue has been increased
 		assertEquals(4, testValue.get());
 		
+		// Assert that a NullPointerException is thrown when a null event is passed
+		assertThrows(NullPointerException.class, () -> listener.fireEvent(null));
+		
 		// Clean up
 		cleanUp(listener);
 	}
@@ -186,6 +189,9 @@ public interface ListenerTest<T extends Listener> {
 		
 		// Assert that we have 2 SupportedEventType
 		assertEquals(2, listener.getSupportedEventTypes().size());
+		
+		// Assert that a NullPointerException is thrown when a null eventClass is passed
+		assertThrows(NullPointerException.class, () ->  listener.getHandlers(null));
 		
 		// Clean up
 		cleanUp(listener);

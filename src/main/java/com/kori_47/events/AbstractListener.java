@@ -28,15 +28,18 @@ public abstract class AbstractListener implements Listener {
 	protected final Map<Class<? extends Event>, List<Handler<? extends Event>>> registeredHandlers;
 
 	/**
+	 * Creates a new Listener with the given listener storage.
 	 * 
+	 * @param registeredHandlers the {@code Map} to store listeners.
+	 * 
+	 * @throws NullPointerException if {@code registeredHandlers} is {@code null}.
 	 */
 	public AbstractListener(Map<Class<? extends Event>, List<Handler<? extends Event>>> registeredHandlers) {
 		this.registeredHandlers = requireNonNull(registeredHandlers, "registeredHandlers cannot be null.");
 	}
 
 	/**
-	* {@inheritDoc}
-	* @throws NullPointerException if any of the arguments given is/are {@code null}.
+	* {@inheritDoc} 
 	*/
 	@Override
 	public <T extends Event> void addHandler(Class<T> eventClass, Handler<T> handler) {
@@ -51,7 +54,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if any of the arguments given is/are {@code null}.
 	*/
 	@Override
 	public <T extends Event> void removeHandler(Class<T> eventClass, Handler<T> handler) {
@@ -68,7 +70,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if event is {@code null}.
 	*/
 	@SuppressWarnings("unchecked")
 	@Override
@@ -94,7 +95,6 @@ public abstract class AbstractListener implements Listener {
 
 	/**
 	* {@inheritDoc}
-	* @throws NullPointerException if {@code eventClass} is {@code null}.
 	*/
 	@Override
 	public <T extends Event> Optional<List<Handler<T>>> getHandlers(Class<T> eventClass) {

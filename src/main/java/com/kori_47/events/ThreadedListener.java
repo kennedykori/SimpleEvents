@@ -28,12 +28,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * <i>(or the thread calling {@code fireEvent})</i> - e.g a handler that sends data over a network connection or 
  * saves data to a file - and thus delay or prevent other time sensitive handler's from being executed.
  * </p>
+ * 
  * <p>
  * Internally, this class uses an {@link ExecutorService} to manage execution of the handlers so the 
  * {@link #dispose()} method is used to shutdown the {@code ExecutorService} and free it's resources. Once 
  * {@code dispose()} has been called on a listener, the listener is {@link #clear() cleared} and cannot be used for 
  * further handling of events. After disposing, an {@link IllegalStateException} will be thrown if any of the following 
  * methods are called:
+ * </p>
  * <ul>
  * 		<li>{@link #addHandler(Class, Handler)}</li>
  * 		<li>{@link #removeHandler(Class, Handler)}</li>
@@ -43,10 +45,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * </ul> 
  * The {@link #isDisposed()} method can be used to check if a listener has been disposed. Both {@code isDisposed()} 
  * and {@link #clear()} method are safe to call even after after the listener has been disposed.
- * </p>
  * 
  * <p>
- * <i><b>NOTE:</b> Instances of this class are thread safe and can be called from multiple threads.</i></p>
+ * <i><b>NOTE:</b> Instances of this class are thread safe and can be called from multiple threads.</i>
+ * </p>
  * 
  * @author Kennedy Kori
  *
