@@ -7,7 +7,7 @@ An Event is simply an occurrence of interest during the normal execution of a pr
 
 #### Handlers
 
-A Handler is a callback that is executed once an Event occurs. Before a handler can be executed, it must be registered to a listener. All handlers must be implement the *Handler* interface.
+A Handler is a callback that is executed once an Event occurs. Before a handler can be executed, it must be registered to a listener. All handlers must implement the *Handler* interface.
 
 
 #### Listeners
@@ -54,7 +54,7 @@ You can start by using the existing concrete implementations of the *Event* inte
 import com.kori_47.events.SimpleEvent;
 
 
-public class TimerChangedEvent {
+public class TimerChangedEvent extends SimpleEvent {
 
 	private final long previousValue;
 	private final long newValue;
@@ -173,7 +173,7 @@ The test coverage report can be generated as follows:
 ./gradlew jacocoTestReport
 ```
 
-* The CD into `build/reports/jacoco/test/html` and open `index.html` in your browser
+* Then CD into `build/reports/jacoco/test/html` and open `index.html` in your browser
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
