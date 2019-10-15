@@ -1,6 +1,6 @@
 # SimpleEvents
 
-[![Build Status](https://travis-ci.org/kennedykori/SimpleEvents.svg?branch=master)](https://travis-ci.org/kennedykori/SimpleEvents) [![codecov](https://codecov.io/gh/kennedykori/SimpleEvents/branch/master/graph/badge.svg)](https://codecov.io/gh/kennedykori/SimpleEvents)
+[![Build Status](https://travis-ci.org/kennedykori/SimpleEvents.svg?branch=master)](https://travis-ci.org/kennedykori/SimpleEvents) [![codecov](https://codecov.io/gh/kennedykori/SimpleEvents/branch/master/graph/badge.svg)](https://codecov.io/gh/kennedykori/SimpleEvents) [![Download](https://api.bintray.com/packages/kori-47/kori_47/events/images/download.svg)](https://bintray.com/kori-47/kori_47/events/_latestVersion)
 
 This is a light weight events library written in java. It is composed of three main elements:
 
