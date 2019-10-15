@@ -21,7 +21,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kori_47'
-version = '1.0'
+version = '1.0.0'
 
 repositories {
     // Use jcenter for resolving dependencies.
@@ -50,5 +50,96 @@ jacocoTestReport {
         csv.enabled false
         html.enabled true
         xml.enabled true
+    }
+}
+
+// Configure sources JAR
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+// Configure javadoc Jar
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Create the pom configuration:
+def pomConfig = {
+    licenses {
+        license {
+            name 'MIT'
+            url 'https://github.com/kennedykori/SimpleEvents/blob/master/LICENSE'
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id 'kennedykori'
+            name "Kennedy Kori"
+            email 'kennedykori47@gmail.com'
+        }
+    }
+    
+    scm {
+       url 'https://github.com/kennedykori/SimpleEvents'
+    }
+}
+
+publishing {
+    publications {
+        EventsPublication(MavenPublication) {
+            from components.java
+            // Attach sources and javadoc Jars to the main maven publication
+            artifact sourcesJar
+            artifact javadocJar
+            
+            groupId 'com.kori_47'
+            artifactId 'events'
+            version '1.0.0'
+            
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'This is a light weight events library written in java.')
+                root.appendNode('name', 'Events')
+                root.appendNode('url', 'https://github.com/kennedykori/SimpleEvents')
+                root.children().last() + pomConfig
+            }
+       }
+    }
+}
+
+bintray {
+	user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['EventsPublication']
+    pkg {
+    	repo = 'kori_47'
+    	name = 'events'
+		desc = 'This is a light weight events library written in java.'
+		websiteUrl = 'https://github.com/kennedykori/SimpleEvents'
+		issueTrackerUrl = 'https://github.com/kennedykori/SimpleEvents/issues'
+    	vcsUrl = 'https://github.com/kennedykori/SimpleEvents.git'
+    	licenses = ['MIT']
+		publicDownloadNumbers = true
+		
+		githubRepo = 'kennedykori/SimpleEvents'
+		githubReleaseNotesFile = 'README.md'
+		
+		version {
+	        name = '1.0.0'
+	        desc = 'Events 1.0.0'
+	        released  = new Date()
+            vcsTag = 'v1.0.0'
+			// GPG Signing
+			gpg {
+                sign = true
+			}
+			// Maven Central Sync
+			mavenCentralSync {
+				sync = true
+			}
+	    }
     }
 }
